@@ -5,36 +5,46 @@ const { NETWORK } = require(`${basePath}/constants/network.js`);
 const network = NETWORK.eth;
 
 // General metadata for Ethereum
-const namePrefix = "Your Collection";
-const description = "Remember to replace this description";
-const baseUri = "ipfs://NewUriToReplace";
+const namePrefix = "Crazy Critters";
+const description = "Crazy Critters Combat Club";
+const baseUri = "";
 
 const solanaMetadata = {
-  symbol: "YC",
-  seller_fee_basis_points: 1000, // Define how much % you want from secondary market sales 1000 = 10%
-  external_url: "https://www.youtube.com/c/hashlipsnft",
+  symbol: "CC",
+  seller_fee_basis_points: 500, // Define how much % you want from secondary market sales 1000 = 10%
+  external_url: "https://critters.game",
   creators: [
     {
       address: "7fXNuer5sbZtaTEPhtJ5g5gNtuyRoKkvxdjEjEnPN4mC",
       share: 100,
     },
   ],
+  collection: {
+    "name": "Crazy Critters",
+    "family": "Critters Combat Club",
+  }
 };
 
 // If you have selected Solana then the collection starts from 0 automatically
 const layerConfigurations = [
   {
-    growEditionSizeTo: 5,
+    growEditionSizeTo: 10,
     layersOrder: [
       { name: "Background" },
-      { name: "Eyeball" },
-      { name: "Eye color" },
-      { name: "Iris" },
-      { name: "Shine" },
-      { name: "Bottom lid" },
-      { name: "Top lid" },
+      { name: "Critters" },
+      { name: "Hats" },
+      { name: "Weapons" },
+      { name: "Skill Bar" },
+      { name: "ATK", options: { bypassDNA: true} },
+      { name: "DEF", options: { bypassDNA: true} },
+      { name: "HP", options: { bypassDNA: true} },
+      { name: "MA", options: { bypassDNA: true} },
+      { name: "SA", options: { bypassDNA: true} },
+      { name: "CC", options: { bypassDNA: true} },
+      { name: "CD", options: { bypassDNA: true} },
     ],
   },
+  
 ];
 
 const shuffleLayerConfigurations = false;
