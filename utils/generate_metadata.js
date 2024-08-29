@@ -128,16 +128,15 @@ isNeighborColor = (color1, color2, tolerance) => {
   );
 };
 
+const { formatAttributes, createMetadata, generateRandomAttributes } = require(`${basePath}/src/config.js`);
+
 const saveMetadata = (_loadedImageObject) => {
-  let shortName = _loadedImageObject.imgObject.filename.replace(
-    /\.[^/.]+$/,
-    ""
-  );
+  let shortName = _loadedImageObject.imgObject.filename.replace(/\.[^/.]+$/, "");
 
-  let tempAttributes = [];
-  tempAttributes.push(addRarity());
+  let tempAttributes = addRarity(); // Add your rarity or any other attributes here
 
-  let tempMetadata = {
+  // Create base metadata object
+  const baseMetadata = {
     name: `${namePrefix} #${shortName}`,
     description: description,
     image: `${baseUri}/${shortName}.png`,
@@ -145,12 +144,18 @@ const saveMetadata = (_loadedImageObject) => {
     attributes: tempAttributes,
     compiler: "HashLips Art Engine",
   };
+
+  // Use createMetadata function to format and append dynamic attributes
+  const updatedMetadata = createMetadata({ attributes: tempAttributes }, baseMetadata);
+
   fs.writeFileSync(
     `${buildDir}/${shortName}.json`,
-    JSON.stringify(tempMetadata, null, 2)
+    JSON.stringify(updatedMetadata, null, 2)
   );
-  metadataList.push(tempMetadata);
+  metadataList.push(updatedMetadata);
 };
+
+
 
 const writeMetaData = (_data) => {
   fs.writeFileSync(`${buildDir}/_metadata.json`, _data);

@@ -88,7 +88,7 @@ const getElements = (path) => {
       if (attributeTriggers) {
         attributeTriggers.forEach((trigger) => {
           const key = trigger.substring(1); // Remove the "=" from the trigger
-          // console.log(`Found attribute trigger in filename: ${key}`); // Debug log
+          console.log(`Found attribute trigger in filename: ${key}`); // Debug log
           attributes[key] = true; // Mark that this attribute needs dynamic generation
         });
       }
@@ -97,7 +97,7 @@ const getElements = (path) => {
       const weightMatch = i.match(/#(\d+)/);
       const rarityWeight = weightMatch ? parseInt(weightMatch[1], 10) : 1;
 
-      // console.log(`Parsed element:`, { baseName, rarityWeight, attributes }); // Debug log
+      console.log(`Parsed element:`, { baseName, rarityWeight, attributes }); // Debug log
 
       return {
         id: index,
@@ -214,7 +214,7 @@ const addAttributes = (_element) => {
   let selectedElement = _element.layer.selectedElement;
 
   // Log the element layer being processed
-  // console.log(`Processing element: ${_element.layer.name}`);
+  console.log(`Processing element: ${_element.layer.name}`);
 
   // Initialize attributes to generate based on the parsed filename
   let attributesToGenerate = {}; // This will store all generated attributes
@@ -222,7 +222,7 @@ const addAttributes = (_element) => {
   // Ensure the attributes object is initialized correctly
   if (selectedElement.attributes) {
     Object.entries(selectedElement.attributes).forEach(([key, value]) => {
-      if (value !== undefined) { // Check for undefined instead of falsy values
+      if (value) {
         const layerConfig = layerConfigurations[0].layersOrder.find(
           (layer) => layer.name === _element.layer.name
         );
@@ -231,12 +231,10 @@ const addAttributes = (_element) => {
           const range = layerConfig.attributes[key];
 
           // Log the range or type being used for the attribute
-          // console.log(`Generating value for attribute ${key} with range/type: ${range}`);
+          console.log(`Generating value for attribute ${key} with range/type: ${range}`);
 
           // Find all occurrences of the attribute trigger in the filename
           const occurrences = (selectedElement.filename.match(new RegExp(`=${key}`, "g")) || []).length;
-          
-          let totalValue = 0; // Initialize total value for attributes that need to be summed
 
           for (let i = 0; i < occurrences; i++) {
             let generatedValue;
@@ -248,58 +246,42 @@ const addAttributes = (_element) => {
               generatedValue = Math.random() < 0.5 ? true : false;
             }
 
-            // If the key needs summing (appears more than once), add the value to totalValue
-            if (occurrences > 1) {
-              totalValue += generatedValue; // Accumulate values
-            } else {
-              // Normal case for single occurrence
-              attributesToGenerate[key] = generatedValue;
+            // If the key already exists in attributesToGenerate, append the new value to it
+            if (!attributesToGenerate[key]) {
+              attributesToGenerate[key] = []; // Initialize as an empty array
             }
 
-            // console.log(`Generated ${key} value: ${generatedValue}`); // Log each generated value
-          }
+            attributesToGenerate[key].push(generatedValue);
 
-          // If the attribute appeared more than once, set the final total value
-          if (occurrences > 1) {
-            attributesToGenerate[key] = totalValue;
-            // console.log(`Total value for multiple ${key}: ${totalValue}`); // Log total
+            console.log(`Generated ${key} value: ${generatedValue}`); // Log each generated value
           }
-
         } else {
-          // console.warn(`No configuration found for attribute ${key}`);
+          console.warn(`No configuration found for attribute ${key}`);
         }
       }
     });
   } else {
-    // console.warn(`No attributes detected in element: ${selectedElement.name}`);
+    console.warn(`No attributes detected in element: ${selectedElement.baseName}`);
   }
 
-  // Filter out attributes with value 0
-  attributesToGenerate = Object.fromEntries(
-    Object.entries(attributesToGenerate).filter(([_, value]) => value !== 0 && value !== false)
-  );
-
   // Log the generated attributes before constructing the dynamic string
-  // console.log(`Generated attributes: ${JSON.stringify(attributesToGenerate)}`);
+  console.log(`Generated attributes: ${JSON.stringify(attributesToGenerate)}`);
 
   // Construct a string with dynamic attributes from the parsed attributes in the filename
   let dynamicAttributesString = Object.entries(attributesToGenerate)
-    .map(([key, value]) => `${key}=${value}`)
+    .map(([key, values]) => values.map(value => `${key}=${value}`).join(','))
     .join(',');
 
   // Clear previously generated attributes to avoid accumulation
   attributesToGenerate = {};
 
-  // Reset the name with the base name (remove any previous dynamic attributes)
-  const baseName = selectedElement.filename.split('=')[0].trim(); 
-
   // Append the dynamic attributes string to the base name if they exist
   if (dynamicAttributesString) {
-    selectedElement.name = `${baseName}{${dynamicAttributesString}}`; // Use the baseName correctly
+    selectedElement.name = `${_element.layer.selectedElement.baseName}{${dynamicAttributesString}}`;
   }
 
   // Log the final name after adding attributes
-  // console.log(`Final element name: ${selectedElement.name}`);
+  console.log(`Final element name: ${selectedElement.name}`);
 
   attributesList.push({
     trait_type: _element.layer.name,
@@ -307,8 +289,10 @@ const addAttributes = (_element) => {
   });
 
   // Log the final attribute added to the attributes list
-  // console.log(`Final attribute added: ${JSON.stringify(attributesList[attributesList.length - 1])}`);
+  console.log(`Final attribute added: ${JSON.stringify(attributesList[attributesList.length - 1])}`);
 };
+
+
 
 
 
