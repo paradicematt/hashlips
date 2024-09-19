@@ -30,7 +30,7 @@ var attributesList = [];
 var dnaList = new Set();
 const DNA_DELIMITER = "-";
 const HashlipsGiffer = require(`${basePath}/modules/HashlipsGiffer.js`);
-
+const _editionCount = 1
 let hashlipsGiffer = null;
 
 const buildSetup = () => {
@@ -69,9 +69,15 @@ const cleanName = (_str) => {
 };
 
 const getElements = (path) => {
+  const supportedFormats = ['.png', '.jpg', '.jpeg']; // List of supported image formats
+
   return fs
     .readdirSync(path)
-    .filter((item) => !/(^|\/)\.[^\/\.]/g.test(item))
+    .filter((item) => {
+      // Check if the item has a valid image extension
+      const ext = item.slice(item.lastIndexOf('.')).toLowerCase();
+      return supportedFormats.includes(ext) && !/(^|\/)\.[^\/\.]/g.test(item);
+    })
     .map((i, index) => {
       if (i.includes("-")) {
         throw new Error(`Layer name cannot contain dashes, please fix: ${i}`);
@@ -88,7 +94,6 @@ const getElements = (path) => {
       if (attributeTriggers) {
         attributeTriggers.forEach((trigger) => {
           const key = trigger.substring(1); // Remove the "=" from the trigger
-          // console.log(`Found attribute trigger in filename: ${key}`); // Debug log
           attributes[key] = true; // Mark that this attribute needs dynamic generation
         });
       }
@@ -96,8 +101,6 @@ const getElements = (path) => {
       // Match any rarity weight from the filename
       const weightMatch = i.match(/#(\d+)/);
       const rarityWeight = weightMatch ? parseInt(weightMatch[1], 10) : 1;
-
-      // console.log(`Parsed element:`, { baseName, rarityWeight, attributes }); // Debug log
 
       return {
         id: index,
@@ -109,6 +112,7 @@ const getElements = (path) => {
       };
     });
 };
+
 
 
 
@@ -256,7 +260,7 @@ const addAttributes = (_element) => {
               attributesToGenerate[key] = generatedValue;
             }
 
-            // console.log(`Generated ${key} value: ${generatedValue}`); // Log each generated value
+            // console.log(`Generated ${key} value: ${generatedValue}`); // Log each generated value 
           }
 
           // If the attribute appeared more than once, set the final total value
@@ -284,7 +288,7 @@ const addAttributes = (_element) => {
 
   // Construct a string with dynamic attributes from the parsed attributes in the filename
   let dynamicAttributesString = Object.entries(attributesToGenerate)
-    .map(([key, value]) => `${key}=${value}`)
+    .map(([key, value]) => `${key}:${value}`)
     .join(',');
 
   // Clear previously generated attributes to avoid accumulation
@@ -330,14 +334,16 @@ const generateRandomAttributeValue = (range) => {
 
 const loadLayerImg = async (_layer) => {
   try {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
       const image = await loadImage(`${_layer.selectedElement.path}`);
       resolve({ layer: _layer, loadedImage: image });
     });
   } catch (error) {
-    console.error("Error loading image:", error);
+    console.error(`Error loading image for layer ${_layer.layer.name}: ${_layer.selectedElement.path}`, error);
+    throw error; // Re-throw the error to catch it in the calling function
   }
 };
+
 
 const addText = (_sig, x, y, size) => {
   ctx.fillStyle = text.color;
@@ -456,7 +462,7 @@ const writeMetaData = (_data) => {
   fs.writeFileSync(`${buildDir}/json/_metadata.json`, _data);
 };
 
-const saveMetaDataSingleFile = (_editionCount) => {
+const saveMetaDataSingleFile = (_editionCount ) => {
   let metadata = metadataList.find((meta) => meta.edition == _editionCount);
   debugLogs
     ? console.log(

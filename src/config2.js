@@ -30,7 +30,7 @@ const layerConfigurations = [
   {
     growEditionSizeTo: 10,
     layersOrder: [
-      { name: "Background" },
+      { name: "Factions" },
       { name: "Critters" },
       { name: "Hats" },
       { name: "Weapons" },
@@ -81,7 +81,7 @@ const pixelFormat = {
 };
 
 const background = {
-  generate: true,
+  generate: false,
   brightness: "80%",
   static: false,
   default: "#000000",

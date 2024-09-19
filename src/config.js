@@ -5,12 +5,12 @@ const { NETWORK } = require(`${basePath}/constants/network.js`);
 const network = NETWORK.eth;
 
 // General metadata for Ethereum
-const namePrefix = "Critters Master Edition";
+const namePrefix = "Critter";
 const description = "Critters Quest";
-const baseUri = "";
+const baseUri = "https://arweave.net/";
 
 const solanaMetadata = {
-  symbol: "CC",
+  symbol: "$QUEST",
   seller_fee_basis_points: 500, // Define how much % you want from secondary market sales 1000 = 10%
   external_url: "https://critters.quest",
   creators: [
@@ -30,17 +30,21 @@ const layerConfigurations = [
   {
     growEditionSizeTo: 100,
     layersOrder: [
-      { name: "Background" },
-      { name: "Critters" },
-      { name: "Hats", attributes: { DEF: [0, 10], HP: [0, 25], MA: [0, 15], CC:[0, 5], SLOT: 'boolean' } },
-      { name: "Weapons", attributes: { ATK: [7, 23], DEF: [0, 10], HP: [0, 25], MA: [0, 15], CC:[0, 5], CD:[10, 25], SLOT: 'boolean' } },
-      { name: "Skill Bar", },
-      { name: "ATK", options: { bypassDNA: true } },
-      { name: "DEF", options: { bypassDNA: true } },
-      { name: "HP", options: { bypassDNA: true } },
-      { name: "MA", options: { bypassDNA: true } },
-      { name: "CC", options: { bypassDNA: true } },
-      { name: "CD", options: { bypassDNA: true } },
+      // { name: "Faction" },
+      { name: "Critter" },
+      { name: "Eyes", },
+      // { name: "Boots", attributes: { ATK: [0, 5], DEF: [1, 10], HP: [1, 15],MA: [0, 5], CC:[0, 5], CD:[0, 15] }},
+      { name: "Amulets", attributes: { ATK: [0, 15], DEF: [0, 15], HP: [0, 25],MA: [5, 35], CC:[0, 5], CD:[0, 15] }},
+      { name: "Shields", attributes: { DEF: [5, 20], HP: [0, 25], MA: [0, 15], CC:[0, 5] }},
+      { name: "Hat", attributes: { DEF: [5, 10], HP: [0, 25], MA: [0, 15], CC:[0, 5], CD:[0, 10]}},
+      { name: "Weapon", attributes: { ATK: [7, 23], MA: [0, 15], CC:[0, 5], CD:[10, 25] }},
+    //   { name: "Skill Bar", },
+    //   { name: "Base-ATK", options: { bypassDNA: true } },
+    //   { name: "Base-DEF", options: { bypassDNA: true } },
+    //   { name: "Base-HP", options: { bypassDNA: true } },
+    //   { name: "Base-MA", options: { bypassDNA: true } },
+    //   { name: "Base-CC", options: { bypassDNA: true } },
+    //   { name: "Base-CD", options: { bypassDNA: true } },
     ],
   },
 ];
@@ -50,8 +54,8 @@ const shuffleLayerConfigurations = false;
 const debugLogs = false;
 
 const format = {
-  width: 512,
-  height: 512,
+  width: 2048,
+  height: 2048,
   smoothing: false,
 };
 
@@ -80,7 +84,7 @@ const pixelFormat = {
 };
 
 const background = {
-  generate: true,
+  generate: false,
   brightness: "80%",
   static: false,
   default: "#000000",
